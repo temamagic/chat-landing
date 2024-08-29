@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" style="--tg-viewport-height: 100vh; --tg-viewport-stable-height: 100vh;">
+<head>
+    <meta charset="UTF-8">
+    <title>Liza bot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <style>
+        .message {
+            max-width: 70%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .left {
+            background-color: #f1f1f1;
+            align-self: flex-start;
+        }
+        .right {
+            background-color: #d1e7dd;
+            align-self: flex-end;
+        }
+        .voice-message {
+            display: flex;
+            align-items: center;
+        }
+        .voice-icon {
+            margin-right: 10px;
+        }
+        .voice-waveform {
+            width: 100px;
+            height: 20px;
+            background: repeating-linear-gradient(
+                    90deg,
+                    #ccc,
+                    #ccc 1px,
+                    #fff 1px,
+                    #fff 2px
+            );
+        }
+        .document-message {
+            display: flex;
+            align-items: center;
+        }
+        .document-icon {
+            margin-right: 10px;
+        }
+        .blur {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            filter: blur(5px);
+            /*backdrop-filter: blur(5px);*/
+            z-index: 10;
+        }
+        .cta {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+            text-align: center;
+        }
+        .header-container {
+            display: flex;
+            align-items: center;
+        }
+        .header-container img {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="max-w-[600px] h-[100vh] overflow-y-auto overflow-x-hidden mx-auto bg-slate-50 p-4 font-sans flex flex-col relative">
+    <!-- Header -->
+    <div class="header-container">
+        <img src="https://t.me/i/userpic/320/lizarobot.jpg" class="rounded-full w-8 h-8" alt="image">
+        <h1 class="text-slate-800 font-bold text-xl">Чат с Лизой</h1>
+    </div>
+
+    <!-- Chat container -->
+    <div id="chat-container" class="flex flex-col p-6 bg-white rounded-lg shadow-md mb-4 overflow-y-auto relative">
+        <!-- Messages will be appended here -->
+    </div>
+
+    <!-- Blur and CTA block -->
+    <div id="blur" class="blur" style="display: none;"></div>
+    <div id="cta" class="cta" style="display: none;">
+        <div class="message left">
+            Хочешь так же? <a href="https://t.me/lizagpt" target="_blank" class="text-blue-500">Да, хочу!</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        const messages = [
+            { text: "Лиза, привет! Напомни про встречу в понедельник с Максимом", from: "right" },
+            { text: "Привет, Артем! Во сколько будет встреча?", from: "left" },
+            { text: "В десять утра", from: "right" },
+            { text: "Отлично, поставила напоминание тебе в календарь 😉", from: "left" },
+            { type: 'voice', text: "Голосовое сообщение", from: "right" },
+            { text: "Конечно умею, что тебе нарисовать?", from: "left" },
+            { type: 'voice', from: "right" },
+            { text: "Сейчас нарисую...", from: "left" },
+            { type: 'image', image: "./dog.webp", from: "left" },
+            { text: "Супер, подготовь программу мероприятия, сейчас пришлю описание", from: "right" },
+            { text: "Хорошо, жду описание ✍️", from: "left" },
+            { type: 'voice', from: "right" },
+            { text: "Держи, вот программа мероприятия которую ты просил", from: "left" },
+            { type: "document", name: "event.pdf", from: "left" },
+            { text: "И напиши welcome текст для поста в канал", from: "right" },
+            { text: "AI EVENT 2024 - это мероприятие, которое объединяет в себе лучших специалистов в области искусственного интеллекта.......", from: "left" },
+        ];
+
+        let index = 0;
+
+        function scrollToBottom() {
+            $('#chat-container').scrollTop($('#chat-container')[0].scrollHeight);
+        }
+
+        function displayMessage() {
+            if (index < messages.length) {
+                const message = messages[index];
+                let messageElement = $('<div></div>').addClass('message').addClass(message.from);
+
+                if (message.type === 'image') {
+                    messageElement.append($('<img>').attr('src', message.image).css('max-width', '100%'));
+                } else if (message.type === 'voice') {
+                    const voiceContainer = $('<div></div>').addClass('voice-message');
+                    voiceContainer.append($('<div></div>').addClass('voice-icon').text('🎤'));
+                    voiceContainer.append($('<div></div>').addClass('voice-waveform'));
+                    messageElement.append(voiceContainer);
+                } else if (message.type === 'document') {
+                    const documentContainer = $('<div></div>').addClass('document-message');
+                    documentContainer.append($('<div></div>').addClass('document-icon').text('📄'));
+                    documentContainer.append($('<div></div>').text(message.name));
+                    messageElement.append(documentContainer);
+                } else {
+                    messageElement.text(message.text);
+                }
+
+                $('#chat-container').append(messageElement);
+                scrollToBottom();
+                index++;
+                setTimeout(displayMessage, 1000); // Adjust the delay as needed
+            } else {
+                // Show blur and CTA block at the end
+                $('#blur').show();
+                $('#cta').show();
+                scrollToBottom();
+            }
+        }
+
+        setTimeout(displayMessage, 500); // Adjust the delay as needed
+    });
+</script>
+</body>
+</html>
