@@ -104,6 +104,33 @@
 </div>
 
 <script>
+    const routes = {
+        '/tos': {
+            link: '/docs/tos.html',
+        },
+        '/privacy': {
+            link: '/docs/privacy.html',
+        },
+        '/refund': {
+            link: '/docs/refund.html',
+        },
+        '/oferta': {
+            link: '/docs/oferta.html',
+        },
+        '/aia': {
+            link: '/docs/aia.html',
+        },
+    };
+
+    // Get the current route
+    const currentRoute = window.location.pathname;
+
+    // Redirect to the corresponding route
+    if (routes[currentRoute]) {
+        window.location.href = routes[currentRoute].link;
+    }
+
+
     $(document).ready(function() {
         const messages = [
             { text: "Лиза, привет! Напомни про встречу в понедельник с Максимом", from: "right" },
