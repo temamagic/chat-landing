@@ -86,7 +86,7 @@
     <!-- Header -->
     <div class="header-container">
         <img src="https://t.me/i/userpic/320/lizarobot.jpg" class="rounded-full w-8 h-8" alt="image">
-        <h1 class="text-slate-800 font-bold text-xl">Чат с Лизой</h1>
+        <h1 class="text-slate-800 font-bold text-xl" id="header-title">Чат с Лизой</h1>
     </div>
 
     <!-- Chat container -->
@@ -104,21 +104,49 @@
 </div>
 
 <script>
+    function getBrowserLanguage() {
+        const language = navigator.language || navigator.userLanguage;
+        return language.startsWith('ru') ? 'ru' : 'en'; // если язык русский, возвращаем 'ru', иначе 'en'
+    }
+
+    const headerTitle = document.getElementById('header-title');
+    const cta = document.getElementById('cta');
+
+    // Set the header title based on the browser language
+    headerTitle.innerText = getBrowserLanguage() === 'ru' ? 'Чат с Лизой' : 'Chat with Lisa';
+    // Set the CTA text based on the browser language
+    cta.querySelector('.message').innerHTML = getBrowserLanguage() === 'ru' ? 'Хочешь так же? <a href="https://t.me/lizagpt" target="_blank" class="text-blue-500">Да, хочу!</a>' : 'Want the same? <a href="https://t.me/lizagpt" target="_blank" class="text-blue-500">Yes, I do!</a>';
+
     const routes = {
         '/tos': {
-            link: '/docs/tos.html',
+            links: {
+                'ru': '/docs/ru/tos.html',
+                'en': '/docs/en/tos.html',
+            }
         },
         '/privacy': {
-            link: '/docs/privacy.html',
+            links: {
+                'ru': '/docs/ru/privacy.html',
+                'en': '/docs/en/privacy.html',
+            }
         },
         '/refund': {
-            link: '/docs/refund.html',
+            links: {
+                'ru': '/docs/ru/refund.html',
+                'en': '/docs/en/refund.html',
+            }
         },
         '/oferta': {
-            link: '/docs/oferta.html',
+            links: {
+                'ru': '/docs/ru/oferta.html',
+                'en': '/docs/en/oferta.html',
+            }
         },
         '/aia': {
-            link: '/docs/aia.html',
+            links: {
+                'ru': '/docs/ru/aia.html',
+                'en': '/docs/en/aia.html',
+            }
         },
     };
 
@@ -127,29 +155,30 @@
 
     // Redirect to the corresponding route
     if (routes[currentRoute]) {
-        window.location.href = routes[currentRoute].link;
+        window.location.href = routes[currentRoute].links[getBrowserLanguage()];
     }
 
 
     $(document).ready(function() {
         const messages = [
-            { text: "Лиза, привет! Напомни про встречу в понедельник с Максимом", from: "right" },
-            { text: "Привет, Артем! Во сколько будет встреча?", from: "left" },
-            { text: "В десять утра", from: "right" },
-            { text: "Отлично, поставила напоминание тебе в календарь 😉", from: "left" },
-            { type: 'voice', text: "Голосовое сообщение", from: "right" },
-            { text: "Конечно умею, что тебе нарисовать?", from: "left" },
+            { text: { en: "Lisa, hi! Remind me about the meeting on Monday with Maxim", ru: "Лиза, привет! Напомни про встречу в понедельник с Максимом" }, from: "right" },
+            { text: { en: "Hi, Artyom! What time is the meeting?", ru: "Привет, Артем! Во сколько будет встреча?" }, from: "left" },
+            { text: { en: "At ten in the morning", ru: "В десять утра" }, from: "right" },
+            { text: { en: "Great, I set a reminder for you in the calendar 😉", ru: "Отлично, поставила напоминание тебе в календарь 😉" }, from: "left" },
+            { type: 'voice', text: { en: "Voice message", ru: "Голосовое сообщение" }, from: "right" },
+            { text: { en: "Of course, what would you like me to draw?", ru: "Конечно умею, что тебе нарисовать?" }, from: "left" },
             { type: 'voice', from: "right" },
-            { text: "Сейчас нарисую...", from: "left" },
+            { text: { en: "I’ll draw it now...", ru: "Сейчас нарисую..." }, from: "left" },
             { type: 'image', image: "./dog.webp", from: "left" },
-            { text: "Супер, подготовь программу мероприятия, сейчас пришлю описание", from: "right" },
-            { text: "Хорошо, жду описание ✍️", from: "left" },
+            { text: { en: "Super, prepare the event program, I’ll send the description now", ru: "Супер, подготовь программу мероприятия, сейчас пришлю описание" }, from: "right" },
+            { text: { en: "Okay, waiting for the description ✍️", ru: "Хорошо, жду описание ✍️" }, from: "left" },
             { type: 'voice', from: "right" },
-            { text: "Держи, вот программа мероприятия которую ты просил", from: "left" },
+            { text: { en: "Here you go, here’s the event program you asked for", ru: "Держи, вот программа мероприятия которую ты просил" }, from: "left" },
             { type: "document", name: "event.pdf", from: "left" },
-            { text: "И напиши welcome текст для поста в канал", from: "right" },
-            { text: "AI EVENT 2024 - это мероприятие, которое объединяет в себе лучших специалистов в области искусственного интеллекта.......", from: "left" },
+            { text: { en: "And write a welcome text for the post in the channel", ru: "И напиши welcome текст для поста в канал" }, from: "right" },
+            { text: { en: "AI EVENT 2024 is an event that brings together the best specialists in the field of artificial intelligence.......", ru: "AI EVENT 2024 - это мероприятие, которое объединяет в себе лучших специалистов в области искусственного интеллекта......." }, from: "left" },
         ];
+
 
         let index = 0;
 
@@ -175,7 +204,7 @@
                     documentContainer.append($('<div></div>').text(message.name));
                     messageElement.append(documentContainer);
                 } else {
-                    messageElement.text(message.text);
+                    messageElement.text(message.text[getBrowserLanguage()]);
                 }
 
                 $('#chat-container').append(messageElement);
